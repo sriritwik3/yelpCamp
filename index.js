@@ -4,6 +4,7 @@ const path = require('path');
 const Campground = require('./models/campground');
 const { urlencoded } = require('body-parser');
 const methodOverride = require('method-override');
+const ejsMate = require('ejs-mate');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -18,6 +19,7 @@ db.once("open", () => {
 })
 
 const app = express();
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
@@ -44,12 +46,12 @@ app.post('/campgrounds', async(req, res) => {
 
 app.get('/campgrounds/:id', async(req, res) => {
     const campgrounds = await Campground.findById(req.params.id);
-    res.render('campgrounds/show', { campgrounds });
+    res.render('campgrounds/show', { campground: campgrounds });
 });
 
 app.get('/campgrounds/:id/edit', async(req, res) => {
     const campgrounds = await Campground.findById(req.params.id);
-    res.render('campgrounds/edit', { campgrounds });
+    res.render('campgrounds/edit', { campground: campgrounds });
 });
 
 app.put('/campgrounds/:id', async(req, res) => {
